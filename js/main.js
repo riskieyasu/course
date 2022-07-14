@@ -155,7 +155,7 @@ function getCookie(cname) {
   
   // When the user clicks anywhere outside of the modal, close it
   window.onclick = function(event) {
-    parseJwt(a);
+    parseJwt(getCookie("token"));
     var modal = document.getElementById("myModal");
     var modal_2 = document.getElementById("myModal_2");
     var modal_3 = document.getElementById("myModal_3");
@@ -190,7 +190,7 @@ function delete_course(id){
       return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
   }).join(''));
   data = JSON.parse(jsonPayload);
-  id = $("#ci" + a).text();
+  id = $("#ci" + token).text();
   Object.keys(data).forEach(key => {
     if (key=="passkey"){
       delete_2(data['user'],data['passkey'],c_id);
@@ -236,7 +236,7 @@ function delete_3(a,b,c){
 
 
 function delete_4(data){
-  parseJwt(a);
+  parseJwt(getCookie("token"));
   topiclist();
 }
   function seven(){
@@ -263,6 +263,7 @@ function delete_4(data){
   
             if (h =='token generated'){
               console.log(h);
+              parseJwt(getCookie("token"));
               window.location.href = "/"
              
             }
@@ -341,7 +342,7 @@ function fe(){
   modal_3.style.display='block';
 }
 
-function parseJwt (token) {
+function parseJwt(token) {
   var base64Url = token.split('.')[1];
   var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
   var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
@@ -354,17 +355,12 @@ function parseJwt (token) {
     newf(data['user'],data['passkey']);
     }
   });
-//   Object.values(data).forEach(value => {
-//     if (value=="Denda"){
-//       newf(data['user'],data['passkey']);
-      
-//     }
-//  }); 
+
   
 }
 
-var a = getCookie("token");
-parseJwt(a);
+// var a = getCookie("token");
+// parseJwt(getCookie("token"));
 
 function newf(us,pw) {
 
@@ -379,27 +375,32 @@ let url = 'http://127.0.0.1:5000/courses';
               headers: headers,
               credentials: 'include'
              })
-      .then(response => response.text())
+      .then(response => response.json())
       .then(json => fetchuserdata(json));
       
           
 }
+
 function fetchuserdata(data){
 var role_='student';
-var obj = JSON.parse(data);
-id = obj.b_student_id;
-role = obj.c_role;
+// var obj = JSON.parse(data);
+id = data.b_student_id;
+role = data.c_role;
 if (role=='user'){
 role=role_;
 }
-var nama = getCookie("username");
-$("#datanama").empty().append("<h3 style='color:black'>"+nama+"</h3>");
+else{
+  role='teacher';
+}
+// var nama = getCookie("username");
+// $("#datanama").empty().append("<h3 style='color:black'>"+nama+"</h3>");
+
 $("#dataid").empty().append("<p style='text-align:center;color:black' class='mb-0'><strong class='pr-1'>"+role+" ID : </strong>"+id+"</p>");
-Object.keys(obj).forEach(key => {
+Object.keys(data).forEach(key => {
   // html += "<tr><td>"+ value["</td><td>Item</td><td>Item</td><td>Item</td></tr>" ;
   if (key=="b_student_id"){
-  let courses = obj['d_courses'];
-  let role = obj['c_role'];
+  let courses = data['d_courses'];
+  let role = data['c_role'];
   if (role=='user'){
   courses_f(courses,role);
   }
@@ -479,8 +480,7 @@ function teacher_3(data){
 var angka = 1;
 function update(){
 
-var nama = getCookie("username");
-html = "<input id='nama' style='color:black; font-size:14px; width:90%;' value='" + nama + "'></input>";
+
 var token = getCookie("token");
 var base64Url = token.split('.')[1];
   var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -503,11 +503,15 @@ var base64Url = token.split('.')[1];
 //       update_2(user,passkey);
 //     }
 //  }); 
+}
  function update_2(us,pw){
+   pw_=pw;
 if (angka%2!=0){
+ var nama = getCookie("username");
+let html = "<input id='nama' style='color:black; font-size:14px; width:90%;' value='" + nama + "'></input>";
 $("#datanama").empty().append(html);
 angka=2;
-console.log(us,pw),angka;
+console.log(us,pw);
 }
 else if (angka%2==0){
   let nama = $("#nama").val();
@@ -542,13 +546,16 @@ else if (angka%2==0){
               credentials: 'include'
              })
       .then(response => response.text())
-      .then(data => label(data));
+      .then(data => label(data,pw_));
 }
  }
-}
-function label(a){
+ 
+function label(data,pw){
+  // console.log(b,pw);
   b = getCookie('username');
-  
+  console.log(b,pw);
+  newf(b,pw);
+
   $("#datanama").empty().append("<h3 style='color:black'>"+b+"</h3>");
   angka = 1;
   
@@ -615,7 +622,7 @@ function fetchcourse_1(topic){
   let title="";
   Object.values(topic).forEach(value => {
     title = "<h1 style='color:black; text-align:center;'>"+value['1_name']+"</h1>"
-    fetchcourse_2(value['3_courses']);
+    fetchcourse_2(value['2_courses']);
     
   });
   $("#topictitle").empty().append(title);
@@ -765,7 +772,7 @@ function enroll_3(info){
       alert(info['message']);
     }
   });
-  parseJwt(a);
+  parseJwt(getCookie("token"));
 }
 
 $("#coursehall").load("single.html #single"); 
@@ -811,7 +818,7 @@ function cancel_3(info){
     if (i == 'message'){
       alert(info['message']);
       // window.location.href ='index';
-      parseJwt(a);
+      parseJwt(getCookie("token"));
     }
   }
 }
@@ -909,7 +916,7 @@ function complete_3(info){
     if (i == 'message'){
       alert(info['message']);
       document.getElementById("myModal_6").style.display ="none";
-      parseJwt(a);
+      parseJwt(getCookie("token"));
     }
   }
 }
@@ -1060,46 +1067,31 @@ function fetchtopstudents(){
 $("#topstudents").empty().append(html);
 }
 }
-
 function uploadcourse(){
-  let a = $("#name").val();
-  let b = $("#topicname").val();
-  let c = $("#description").val();
-  let d = $("#prerequisites").val();
+let b = $("#topicname").val();
+  let url = 'http://127.0.0.1:5000/topicidsearch';
 
+  data = {
+   
+    topic: b
   
-  let url = 'http://127.0.0.1:5000/searchcourse';
-    
-   let headers = new Headers();
-   data = {
-     topic: b,
-   }
-     headers.append('Content-Type', 'application/json');
-   // headers.set('Authorization', 'Basic ' +  btoa(us + ":" + pw));
-     
-     fetch(url, {method:'POST',
-             headers: headers,
-             body: JSON.stringify(data),
-             credentials: 'include',
-            })
-     .then(response => response.json())
-     .then(json => uploadcourse_2(json,a,c,d));
-}
+  }
 
-function uploadcourse_2(data,a_,c_,d_){
-  let name_ = a_;
-  let desc_ = c_;
-  let preq_ = d_;
-  Object.values(data).forEach(value => {
-  uploadcourse_bridge(value['2_id'],name_,desc_,preq_);
-  });
-  
+  fetch(url, {method:'POST',
+  headers:{
+  'Content-Type': 'application/json'
+
+},
+          body: JSON.stringify(data),
+          credentials: 'include',
+         })
+  .then(response => response.text())
+  .then(json => upload_2(json));
+
+
 }
-function uploadcourse_bridge(id__,name__,desc__,preq__){
-  let id___= id__;
-  let name___= name__;
-  let desc___= desc__;
-  let preq___= preq__;
+function upload_2(id){
+  var topic_id = parseInt(id);
   var token = getCookie('token');
   var base64Url = token.split('.')[1];
   var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -1107,39 +1099,58 @@ function uploadcourse_bridge(id__,name__,desc__,preq__){
       return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
   }).join(''));
   data = JSON.parse(jsonPayload);
-  id = $("#ci" + a).text();
+  
   Object.keys(data).forEach(key => {
     if (key=="passkey"){
-      uploadcourse_3(data['user'],data['passkey'],id___,name___,desc___,preq___);
+      upload_3(data['user'],data['passkey'] ,topic_id);
     }
   });
 }
-function uploadcourse_3(us,pw,id,name,desc,preq){
-  // let preq_ = [String(preq)];
-  const parray = preq.split(", ");
-  // console.log(parray);
+function upload_3(us,pw,id){
   let url = 'http://127.0.0.1:5000/course';
-    
-   let headers = new Headers();
+  let a = $("#name").val();
+  let c = $("#description").val();
+  let d = $("#prerequisites1").val();
+  let e = $("#prerequisites2").val();
+  let f = $("#prerequisites3").val();
+  if (d=="" && e=="" && f==""){
+    var preq_=[]
+  }
+  else if(e=="" && f==""){
+    var preq_=[d]
+  }
+  else if(f==""){
+    var preq_=[d,e]
+  }
+  else{
+    var preq_=[d,e,f]
+  }
+  //  let headers = new Headers();
    data = {
-     title:name,
+     title: a,
      topic_id: id,
-     description:desc,
-     prerequisite: parray
+     description :c,
+     prerequisite : preq_
    }
-     headers.append('Content-Type', 'application/json');
-     headers.append('Authorization', 'Basic ' +  btoa(us + ":" + pw));
+    //  headers.append('Content-Type', 'application/json');
+   // headers.set('Authorization', 'Basic ' +  btoa(us + ":" + pw));
      
      fetch(url, {method:'POST',
-             headers: headers,
+     headers:{'Authorization': 'Basic ' +  btoa(us + ":" + pw),
+     'Content-Type': 'application/json'
+
+   },
              body: JSON.stringify(data),
              credentials: 'include',
             })
      .then(response => response.json())
-     .then(json => uploadcourse_4(json));
+     .then(json => uploadcourse_bridge(json));
 }
-
-function uploadcourse_4(data){
-alert(data.message);
-topiclist();
+function uploadcourse_bridge(data){
+  // if(data=='Success'){
+    
+      alert(data.message);
+      topiclist();
+      
+  // }
 }

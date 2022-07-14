@@ -468,7 +468,7 @@
     <!-- Modal content -->
     <div class="modal-content" style="height:450px;">
       <span class="close" onclick="closecupload()">&times;</span>
-      <form style="margin-top:-10px">
+      <form style="margin-top:-10px ;height: 95%; overflow-y:scroll;">
         <div class="input-container">
           <input class = "cinput" id ="name" required type="text" />
           <label class="clabel">Name</label>
@@ -483,8 +483,16 @@
           <label class="clabel">Description</label>
         </div>
         <div class="input-container">
-          <input class = "cinput" id ="prerequisites" required type="text" />
-          <label class="clabel">Prerequisites(Optional)</label>
+          <input class = "cinput" id ="prerequisites1" required type="text" />
+          <label class="clabel">Prerequisites 1(Optional)</label>
+        </div>
+        <div class="input-container">
+          <input class = "cinput" id ="prerequisites2" required type="text" />
+          <label class="clabel">Prerequisites 2(Optional)</label>
+        </div>
+        <div class="input-container">
+          <input class = "cinput" id ="prerequisites3" required type="text" />
+          <label class="clabel">Prerequisites 3(Optional)</label>
         </div>
         <div class="input-container">
           <a style="text-align:center; color:black; text-decoration:none; line-height: 2.2;" href="#" class ="submit" onclick="uploadcourse()"><p>Upload Course</p></a>
@@ -497,7 +505,8 @@
 
 
 <script>
-    
+var nama = getCookie("username");
+$("#datanama").empty().append("<h3 style='color:black'>"+nama+"</h3>");
 topiclist();
 $("#coursehall").load("single.html #single"); 
 topcourse();
